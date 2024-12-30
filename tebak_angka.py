@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template_string, request
+from datetime import datetime, timedelta
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 # The list of numbers
 numbers = [
@@ -32,12 +33,288 @@ def index():
             try:
                 guess = int(guess)
                 if guess == correct_number:
-                    message = "SELAMAT ANDA MENDAPATKAN HADIAH KEBERUNTUNGAN SEBESAR Rp.50,000,000.00."
+                    message = "SELAMAT ANDA MENDAPKAN HADIAH KEBERUNTUNG SEBESAR Rp.50,000,000.00."
                 else:
                     message = "Coba lagi...! Kali ini mungking ANDA yang HOKI CUAN...."
             except ValueError:
                 message = "Please enter a valid number."
-    return render_template("index.html", numbers=numbers, message=message)
+    
+    # Calculate the date and time of the event (e.g., 3 days from now)
+    event_time = datetime.now() + timedelta(days=3)
 
-if __name__ == "__main__":
+    # Format remaining time as hours, minutes, and seconds
+    return render_template_string("""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEBAK KEBERUNTUNGAN HARI INI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(45deg, #ff6a00, #ff0000, #ff73c5);
+            background-size: 600% 600%;
+            animation: gradientShift 5s ease infinite, waveEffect 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes waveEffect {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(20px);
+            }
+            50% {
+                transform: translateX(0);
+            }
+            75% {
+                transform: translateX(-20px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        marquee {
+            font-size: 18px;
+            color: limegreen;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            background-color: orange;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .numbers {
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .numbers span {
+            display: inline-block;
+            margin: 10px;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            background-color: #f1f1f1;
+        }
+
+        .numbers span:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 10px white;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid orange;
+            border-radius: 5px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: orange;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: darkorange;
+            transform: scale(1.1);
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: limegreen;
+        }
+
+        .countdown {
+            margin-top: 20px;
+            font-size: 48px;
+            color: yellow;
+            font-weight: bold;
+        }
+
+        .previous-winner {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: lightgreen;
+            text-align: center;
+        }
+
+        table {
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 50%;
+            margin-top: 20px;
+        }
+
+        td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid white;
+        }
+
+        th {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid white;
+            background-color: #333;
+        }
+
+    </style>
+</head>
+<body>
+    <marquee behavior="scroll" direction="left">WELCOME TO THE LOTTERY GAME! TRY YOUR LUCK AND WIN BIG!</marquee>
+
+    <h1>TEBAK KEBERUNTUNGAN HARI INI</h1>
+
+    <p>Find the right number to win big!</p>
+
+    <div class="numbers">
+        {% for number in numbers %}
+        <span class="random-color" id="number-{{ number }}">{{ number }}</span>
+        {% endfor %}
+    </div>
+
+    <div class="form-container">
+        <form method="post">
+            <input type="text" name="guess" placeholder="Enter your guess here">
+            <button type="submit">SUBMIT</button>
+        </form>
+    </div>
+
+    <div class="message">{{ message }}</div>
+
+    <div class="countdown" id="countdown">
+        <!-- Countdown will be updated by JavaScript -->
+    </div>
+
+    <div class="previous-winner">
+        <p>Previous Winner:</p>
+        <table>
+            <tr>
+                <th>No</th>
+                <th>Pemenang Periode Lalu</th>
+                <th>ID No.</th>
+                <th>Total</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>27/12/2024</td>
+                <td>2001007</td>
+                <td>Rp.10,000,000.00</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="bottom-buttons">
+        <button>Contact us</button>
+        <button>Terms & Conditions</button>
+        <button>Privacy Policy</button>
+    </div>
+
+    <script>
+        // Function to generate a random color
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Function to apply random colors to the numbers
+        function applyRandomColors() {
+            const numberElements = document.querySelectorAll('.random-color');
+            numberElements.forEach(element => {
+                element.style.backgroundColor = getRandomColor();
+                element.style.color = getRandomColor();
+            });
+        }
+
+        // JavaScript to calculate the countdown
+        function updateCountdown() {
+            const eventTime = new Date("{{ event_time }}").getTime();
+            const now = new Date().getTime();
+            const timeLeft = eventTime - now;
+
+            if (timeLeft <= 0) {
+                document.getElementById("countdown").innerHTML = "Event started!";
+                return;
+            }
+
+            const hours = Math.floor((timeLeft / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((timeLeft / (1000 * 60)) % 60);
+            const seconds = Math.floor((timeLeft / 1000) % 60);
+
+            document.getElementById("countdown").innerHTML = ${hours}h ${minutes}m ${seconds}s;
+
+            setTimeout(updateCountdown, 1000); // update every second
+        }
+
+        // Apply random colors every 2 seconds
+        setInterval(applyRandomColors, 2000);
+
+        updateCountdown(); // start the countdown
+    </script>
+</body>
+</html>
+    """, numbers=numbers, event_time=event_time)
+
+if _name_ == "_main_":
     app.run(debug=True)
